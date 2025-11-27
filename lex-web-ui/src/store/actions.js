@@ -572,6 +572,14 @@ export default {
       .then((response) => {
         if (context.state.chatMode === chatMode.BOT &&
           context.state.liveChat.status != liveChatStatus.REQUEST_USERNAME) {
+          context.dispatch('setSessionAttribute', {
+            key: 'previousUtterance',
+            value: message.text
+          });
+          context.dispatch('setSessionAttribute', {
+            key: 'previousLexResponse',
+            value: response.message
+          });
           // check for an array of messages
           if (response.sessionState || (response.message && response.message.includes('{"messages":'))) {
             if (response.message && response.message.includes('{"messages":')) {
