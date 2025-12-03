@@ -18,6 +18,7 @@
         ref="textInput"
         id="text-input"
         name="text-input"
+        maxlength="1024"
         hide-details
         density="compact"
         variant="underlined"
