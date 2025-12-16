@@ -60,6 +60,11 @@ export const dependenciesFullPage = {
       name: 'lex-web-ui-loader',
       url: './lex-web-ui-loader.css',
     },
+    {
+      name: 'custom-chatbot-style',
+      url: './custom-chatbot-style.css',
+      optional: true
+    },
   ],
 };
 
@@ -68,6 +73,11 @@ export const dependenciesIframe = {
     {
       name: 'lex-web-ui-loader',
       url: './lex-web-ui-loader.css',
+    },
+    {
+      name: 'custom-chatbot-style',
+      url: './custom-chatbot-style.css',
+      optional: true
     },
   ],
   script: []

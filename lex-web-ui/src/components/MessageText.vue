@@ -36,13 +36,46 @@ or in the "license" file accompanying this file. This file is distributed on an 
 BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the
 License for the specific language governing permissions and limitations under the License.
 */
-import { chatMode } from '@/store/state';
+import {chatMode} from '@/store/state';
+
 const marked = require('marked');
-const renderer = {};
-renderer.link = function link(href, title, text) {
-  return `<a href="${href}" title="${title}" target="_blank">${text}</a>`;
+
+// Custom tokenizer for HTTPS and tel links
+const linkTokenizer = {
+  name: 'customLink',
+  level: 'inline',
+  start(src) {
+    return src.match(/https?:\/\/|tel:/)?.index;
+  },
+  tokenizer(src) {
+    const httpsMatch = src.match(/^(https?:\/\/[^\s<>"{}|\\^`[\]]+)/);
+    if (httpsMatch) {
+      return {
+        type: 'customLink',
+        raw: httpsMatch[0],
+        href: httpsMatch[1],
+        text: httpsMatch[1],
+        linkType: 'https'
+      };
+    }
+
+    const telMatch = src.match(/^(tel:[\d\-\+\(\)\s]+)/);
+    if (telMatch) {
+      return {
+        type: 'customLink',
+        raw: telMatch[0],
+        href: telMatch[1],
+        text: telMatch[1].replace('tel:', ''),
+        linkType: 'tel'
+      };
+    }
+  },
+  renderer(token) {
+    return `<a href="${token.href}" ${token.linkType === 'tel' ? 'class="tel-link" target="_blank"' : 'target="_blank"'}>${token.text}</a>`;
+  }
 };
-marked.use({renderer});
+
+marked.use({ extensions: [linkTokenizer] });
 
 export default {
   name: 'message-text',
@@ -77,8 +110,7 @@ export default {
       // to context (e.g. URL, HTML). This is rendered as HTML
       const messageText = this.stripTagsFromMessage(this.message.text);
       const messageWithLinks = this.botMessageWithLinks(messageText);
-      const messageWithSR = this.prependBotScreenReader(messageWithLinks);
-      return messageWithSR;
+      return this.prependBotScreenReader(messageWithLinks);
     },
   },
   methods: {
@@ -106,11 +138,23 @@ export default {
           replace: (item) => {
             const url = (!/^https?:\/\//.test(item)) ? `http://${item}` : item;
             return '<a target="_blank" ' +
-              `href="${encodeURI(url)}">${this.encodeAsHtml(item)}</a>`;
+              `href="${encodeURI(url)}">${item}</a>`;
+          },
+        },
+        {
+          type: 'tel',
+          regex: new RegExp(
+            '\\b(tel:[+]?[\\d\\-\\(\\)\\.]{7,20})',
+            'im',
+          ),
+          replace: (item) => {
+            const displayText = item.replace(/^tel:/, '');
+            return `<a href="${encodeURI(item)}" target="_blank">${displayText}</a>`;
           },
         },
       ];
-      // TODO avoid double HTML encoding when there's more than 1 linkReplacer
+
+      let origMessageEncoded = this.encodeAsHtml(messageText)
       return linkReplacers
         .reduce(
           (message, replacer) =>
@@ -126,13 +170,13 @@ export default {
                   if ((index % 2) === 0) {
                     const urlItem = ((index + 1) === array.length) ?
                       '' : replacer.replace(array[index + 1]);
-                    messageResult = `${this.encodeAsHtml(item)}${urlItem}`;
+                    messageResult = `${item}${urlItem}`;
                   }
                   return messageAccum + messageResult;
                 },
                 '',
               ),
-          messageText,
+          origMessageEncoded,
         );
     },
     // used for stripping SSML (and other) tags from bot responses
