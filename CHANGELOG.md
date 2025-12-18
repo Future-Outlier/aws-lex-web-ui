@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.23.1] - 2025-12-17
+- Allow users to specify tel:+x.xxx.xxx.xxxx format phone numbers in message responses and in connect wait for agent messages. This allows users to touch on the phone number on mobile devices to initiate a call.
+- Added custom-chatbot-style.css as a dependency to lex-web-ui-loader to allow for enhanced customization
+- Hard set the character limit for the text input box element to 1024
+- Depedency updates
+
 ## [0.23.0] - 2025-10-3
 - Remove all reference to Lex v1 as it has been deprecated
 - Revamp how token refreshes work to resolve some issues that were introduced when migrating to SDKv3
