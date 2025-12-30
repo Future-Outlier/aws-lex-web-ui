@@ -2,13 +2,16 @@ module.exports = {
   root: true,
   env: {
     node: true,
+    browser: true,
+    es2022: true,
   },
   extends: [
     'plugin:vue/essential', 
     'plugin:vue/vue3-recommended'
   ],
   parserOptions: {
-    parser: '@babel/eslint-parser',
+    ecmaVersion: 2022,
+    sourceType: 'module',
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',

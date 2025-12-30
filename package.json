@@ -2,7 +2,7 @@
   "name": "aws-lex-web-ui",
   "version": "0.23.1",
   "description": "Sample Amazon Lex Web Interface",
-  "main": "dist/lex-web-ui.min.js",
+  "main": "lex-web-ui/dist/bundle/lex-web-ui.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/awslabs/aws-lex-web-ui.git"
@@ -23,10 +23,15 @@
   },
   "homepage": "https://github.com/awslabs/aws-lex-web-ui#readme",
   "scripts": {
-    "build-prod": "webpack --mode production --env production",
-    "build-dev": "webpack --mode development",
-    "build": "npm run build-dev && npm run build-prod",
-    "dev": "webpack-dev-server --mode development  --hot",
+    "serve": "cd lex-web-ui && npm run serve",
+    "build": "cd lex-web-ui && npm run build",
+    "build:dev": "cd lex-web-ui && npm run build:dev",
+    "build:lib-dev": "cd lex-web-ui && npm run build:lib-dev",
+    "build:lib-prod": "cd lex-web-ui && npm run build:lib-prod",
+    "build-dist": "cd lex-web-ui && npm run build-dist",
+    "build-prod": "cd lex-web-ui && npm run build",
+    "build-dev": "cd lex-web-ui && npm run build:dev",
+    "dev": "cd lex-web-ui && npm run serve",
     "lint": "eslint --format node_modules/eslint-formatter-friendly src/lex-web-ui-loader"
   },
   "dependencies": {
