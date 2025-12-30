@@ -14,8 +14,8 @@
     "build": "cross-env vite build",
     "build:dev": "cross-env NODE_ENV=development vite build",
     "build-dist": "npm run build:lib-dev && npm run build:lib-prod",
-    "build:lib-dev": "cross-env BUILD_TARGET=lib NODE_ENV=development vite build && node scripts/post-build-css.js",
-    "build:lib-prod": "cross-env BUILD_TARGET=lib NODE_ENV=production vite build && node scripts/post-build-css.js",
+    "build:lib-dev": "cross-env BUILD_TARGET=lib NODE_ENV=development vite build && cross-env BUILD_TARGET=lib NODE_ENV=development node scripts/post-build-css.js",
+    "build:lib-prod": "cross-env BUILD_TARGET=lib NODE_ENV=production vite build && cross-env BUILD_TARGET=lib NODE_ENV=production node scripts/post-build-css.js",
     "lint": "eslint src --ext .vue,.js,.jsx,.ts,.tsx",
     "test:integration": "jest --config test/integration/jest.config.js"
   },
@@ -42,7 +42,6 @@
     "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.23.3",
     "@mdi/font": "^7.4.47",
     "@vitejs/plugin-vue": "^5.2.4",
     "cross-env": "^10.1.0",
@@ -50,7 +49,6 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-vue": "^9.19.2",
     "jest": "^30.2.0",
-    "sass-embedded": "^1.97.1",
     "vite": "^5.4.21",
     "vite-plugin-node-polyfills": "^0.24.0",
     "vite-plugin-vuetify": "^2.1.2"
