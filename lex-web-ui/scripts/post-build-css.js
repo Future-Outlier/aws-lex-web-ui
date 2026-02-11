@@ -15,9 +15,8 @@ const __dirname = path.dirname(__filename);
 
 const isProd = process.env.NODE_ENV?.trim() === 'production';
 const bundleDir = path.join(__dirname, '..', 'dist', 'bundle');
-const sourceCssFile = isProd ? 
-  path.join(bundleDir, 'lex-web-ui.min.css') : 
-  path.join(bundleDir, 'lex-web-ui.css');
+const cssFileName = isProd ? 'lex-web-ui.min.css' : 'lex-web-ui.css';
+const sourceCssFile = path.join(bundleDir, cssFileName);
 
 // Only run for library builds
 if (process.env.BUILD_TARGET?.trim() !== 'lib') {
@@ -70,13 +69,7 @@ function addBannerToCssFile(filePath) {
   }
 }
 
-// Add banner to the source CSS file
+// Add banner to the CSS file
 addBannerToCssFile(sourceCssFile);
 
-// For production builds, the file is already correctly named
-if (isProd) {
-  console.log(`✓ CSS file already correctly named: ${path.basename(sourceCssFile)}`);
-} else {
-  // For development builds, the file is already correctly named
-  console.log(`✓ CSS file already correctly named: ${path.basename(sourceCssFile)}`);
-}
+console.log(`✓ CSS file processed: ${path.basename(sourceCssFile)}`);

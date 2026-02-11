@@ -209,10 +209,14 @@ const baseConfig = {
       // Workers should be self-contained, but we can externalize if needed
       external: [],
       output: {
-        // Ensure workers are placed in the correct directory
-        entryFileNames: buildConfig.isLib ? 
-          `${buildConfig.bundleDir}/[name]-worker.js` : 
-          'assets/[name]-worker-[hash].js'
+        // Ensure workers are placed in the correct directory with proper naming
+        entryFileNames:
+          (chunkInfo) => {
+            // Remove '-worker' suffix if it already exists to avoid duplication
+            const baseName = chunkInfo.name.replace(/-worker$/, '');
+            const suffix = buildConfig.isProd ? '.min.js' : '.js';
+            return `${baseName}-worker${suffix}`;
+          }
       }
     }
   },
@@ -224,7 +228,7 @@ const libraryConfig = {
   // CSS configuration for development
   css: {
     // Configure CSS preprocessing
-     preprocessorOptions : {
+    preprocessorOptions: {
       scss: {
         api: "modern",
         importers: [
@@ -237,6 +241,23 @@ const libraryConfig = {
           new sass.NodePackageImporter()
         ]
       },
+    },
+    // Configure PostCSS to handle newer CSS functions
+    postcss: {
+      plugins: [
+        {
+          postcssPlugin: 'ignore-calc-size',
+          Once(root) {
+            // Replace calc-size() with a fallback for compatibility
+            root.walkDecls(decl => {
+              if (decl.value.includes('calc-size(')) {
+                // Replace calc-size(max-content, size) with max-content as fallback
+                decl.value = decl.value.replace(/calc-size\(([^,]+),\s*size\)/g, '$1');
+              }
+            });
+          }
+        }
+      ]
     }
   },
   build: {
@@ -244,10 +265,10 @@ const libraryConfig = {
       entry: path.resolve(__dirname, 'src/lex-web-ui.js'),
       name: 'LexWebUi',
       formats: ['umd'],
-      fileName: () => buildConfig.isProd ? `${buildConfig.bundleDir}/lex-web-ui.min.js` : `${buildConfig.bundleDir}/lex-web-ui.js`
+      fileName: () => buildConfig.isProd ? `lex-web-ui.min.js` : `lex-web-ui.js`
     },
-    outDir: buildConfig.outputDir,
-    emptyOutDir: false, // Don't clean the output directory to allow multiple builds
+    outDir: path.join(buildConfig.outputDir, buildConfig.bundleDir),
+    emptyOutDir: true, // Clean the bundle directory for library builds
     rollupOptions: {
       // External dependencies that should not be bundled in library mode
       external: [
@@ -280,12 +301,12 @@ const libraryConfig = {
           '@aws-sdk/util-utf8-browser': 'AWS_UtilUtf8Browser',
           '@aws-sdk/util-hex-encoding': 'AWS_UtilHexEncoding'
         },
-        // Ensure CSS files are placed in the bundle directory with correct naming
+        // Ensure CSS files are named consistently
         assetFileNames: (assetInfo) => {
           if (assetInfo.name === 'style.css') {
-            return buildConfig.isProd ? `${buildConfig.bundleDir}/lex-web-ui.min.css` : `${buildConfig.bundleDir}/lex-web-ui.css`
+            return buildConfig.isProd ? `lex-web-ui.min.css` : `lex-web-ui.css`
           }
-          return `${buildConfig.bundleDir}/${assetInfo.name}`
+          return `${assetInfo.name}`
         }
       }
     },
@@ -304,7 +325,16 @@ const appConfig = {
     sourcemap: buildConfig.isDev,
     minify: buildConfig.isProd,
     rollupOptions: {
-      // Let Vite automatically detect index.html in root directory
+      // Configure consistent naming for app builds
+      output: {
+        entryFileNames: buildConfig.isProd ? 'lex-web-ui.min.js' : 'lex-web-ui.js',
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return buildConfig.isProd ? 'lex-web-ui.min.css' : 'lex-web-ui.css'
+          }
+          return '[name].[ext]'
+        }
+      }
     },
     // Configure CommonJS handling
     commonjsOptions: {
@@ -367,7 +397,7 @@ const appConfig = {
     // Enable source maps for CSS in development
     devSourcemap: buildConfig.isDev,
     // Configure CSS preprocessing
-    preprocessorOptions : {
+    preprocessorOptions: {
       scss: {
         api: "modern",
         importers: [
@@ -380,6 +410,23 @@ const appConfig = {
           new sass.NodePackageImporter()
         ]
       },
+    },
+    // Configure PostCSS to handle newer CSS functions
+    postcss: {
+      plugins: [
+        {
+          postcssPlugin: 'ignore-calc-size',
+          Once(root) {
+            // Replace calc-size() with a fallback for compatibility
+            root.walkDecls(decl => {
+              if (decl.value.includes('calc-size(')) {
+                // Replace calc-size(max-content, size) with max-content as fallback
+                decl.value = decl.value.replace(/calc-size\(([^,]+),\s*size\)/g, '$1');
+              }
+            });
+          }
+        }
+      ]
     }
   },
   // Optimize dependencies for faster development startup
