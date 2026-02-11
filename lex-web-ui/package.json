@@ -20,12 +20,12 @@
     "test:integration": "jest --config test/integration/jest.config.js"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "3.470.0",
-    "@aws-sdk/client-connect": "3.470.0",
-    "@aws-sdk/client-lex-runtime-v2": "3.470.0",
-    "@aws-sdk/client-polly": "3.470.0",
-    "@aws-sdk/client-s3": "3.470.0",
-    "@aws-sdk/credential-providers": "3.470.0",
+    "@aws-sdk/client-cognito-identity": "^3.965.0",
+    "@aws-sdk/client-connect": "^3.965.0",
+    "@aws-sdk/client-lex-runtime-v2": "^3.965.0",
+    "@aws-sdk/client-polly": "^3.965.0",
+    "@aws-sdk/client-s3": "^3.965.0",
+    "@aws-sdk/credential-providers": "^3.965.0",
     "amazon-connect-chatjs": "^2.3.0",
     "aws-amplify": "^5.3.26",
     "browserify-zlib": "^0.2.0",
