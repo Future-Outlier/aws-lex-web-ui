@@ -20,7 +20,7 @@ import {
   LexRuntimeV2Client
 } from "@aws-sdk/client-lex-runtime-v2";
 
-const zlib = require('zlib');
+import {zlib} from 'zlib';
 
 function b64CompressedToObject(src) {
   return JSON.parse(zlib.unzipSync(Buffer.from(src, 'base64'))
