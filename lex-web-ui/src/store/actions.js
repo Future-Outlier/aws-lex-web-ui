@@ -18,6 +18,7 @@ License for the specific language governing permissions and limitations under th
 /* eslint no-console: ["error", { allow: ["info", "warn", "error"] }] */
 /* eslint spaced-comment: ["error", "always", { "exceptions": ["*"] }] */
 
+import 'amazon-connect-chatjs';
 import LexAudioRecorder from '@/lib/lex/recorder';
 import initRecorderHandlers from '@/store/recorder-handlers';
 import { chatMode, liveChatStatus } from '@/store/state';
@@ -572,6 +573,14 @@ export default {
       .then((response) => {
         if (context.state.chatMode === chatMode.BOT &&
           context.state.liveChat.status != liveChatStatus.REQUEST_USERNAME) {
+          context.dispatch('setSessionAttribute', {
+            key: 'previousUtterance',
+            value: message.text
+          });
+          context.dispatch('setSessionAttribute', {
+            key: 'previousLexResponse',
+            value: response.message
+          });
           // check for an array of messages
           if (response.sessionState || (response.message && response.message.includes('{"messages":'))) {
             if (response.message && response.message.includes('{"messages":')) {
@@ -881,7 +890,6 @@ export default {
    *
    **********************************************************************/
   initLiveChat(context) {
-    require('amazon-connect-chatjs');
     if (window.connect) {
       window.connect.ChatSession.setGlobalConfig({
         region: context.state.config.region,
